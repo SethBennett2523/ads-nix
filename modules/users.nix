@@ -1,0 +1,67 @@
+# The default account. Its password is printed in this public repository, so
+# it is only ever good for the first console login: change it with `passwd`.
+# SSH never accepts passwords (see remote-admin.nix).
+{ config, lib, ... }:
+let
+  cfg = config.ads.user;
+in
+{
+  options.ads.user = {
+    enable = lib.mkEnableOption "the default UWE-FSAI user account";
+
+    name = lib.mkOption {
+      type = lib.types.str;
+      default = "ads";
+      description = "Login name of the default account.";
+    };
+
+    description = lib.mkOption {
+      type = lib.types.str;
+      default = "UWE-FSAI member";
+    };
+
+    initialPassword = lib.mkOption {
+      type = lib.types.str;
+      default = "uwe-fsai";
+      description = ''
+        Password set when the account is first created. Not a secret: it is
+        in a public repository. Changing it later with `passwd` sticks,
+        because users are mutable.
+      '';
+    };
+
+    extraGroups = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+    };
+
+    authorizedKeys = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "SSH public keys allowed to log in as this user.";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    users.mutableUsers = lib.mkDefault true;
+
+    users.users.${cfg.name} = {
+      isNormalUser = true;
+      inherit (cfg) description initialPassword;
+      extraGroups = [ "wheel" "networkmanager" "video" "audio" "dialout" "plugdev" ] ++ cfg.extraGroups;
+      openssh.authorizedKeys.keys = cfg.authorizedKeys;
+    };
+    users.groups.plugdev = { };
+
+    # No root password; administration is sudo or SSH as the user.
+    users.users.root.hashedPassword = lib.mkDefault "!";
+
+    programs.bash.interactiveShellInit = ''
+      if [ "$USER" = ${lib.escapeShellArg cfg.name} ] && [ ! -e "$HOME/.config/ads/password-changed" ]; then
+        echo "Reminder: the default password is public. Run 'passwd', then"
+        echo "  mkdir -p ~/.config/ads && touch ~/.config/ads/password-changed"
+        echo "to stop this message."
+      fi
+    '';
+  };
+}
