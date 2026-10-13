@@ -10,22 +10,22 @@ and handover.
 
 ## Three ways to use it
 
-**1. As-is.** Each build type is a complete system:
+**1. As-is.** Each build type is a complete system. Developer builds go onto
+an external USB SSD, which is then the drive the computer starts from; a
+computer's internal drive is never written to, and `ads-install` refuses
+internal drives outright:
 
 ```bash
-sudo nixos-rebuild switch --flake github:SethBennett2523/ads-nix#dev-x86
-```
-
-or onto a fresh drive, from any NixOS live USB:
-
-```bash
+# from any NixOS live USB, with the external SSD plugged in
 sudo nix --extra-experimental-features 'nix-command flakes' run --accept-flake-config \
   github:SethBennett2523/ads-nix#ads-install -- dev-x86 /dev/sdX
 ```
 
+The [setup guides](docs/setup/README.md) walk through this step by step.
+
 | Build type | For | Login |
 |---|---|---|
-| `dev-x86` | any x86 laptop or desktop, from a USB drive or an internal disk | `uweai` |
+| `dev-x86` | any x86 laptop or desktop, started from an external USB SSD | `uweai` |
 | `dev-x86-cuda` | the same, with the NVIDIA driver and CUDA | `uweai` |
 | `vm-x86` | a VM on an x86 Windows, Linux or Intel Mac machine | `uweai` |
 | `vm-aarch64` | a VM on an Apple Silicon Mac (UTM) | `uweai` |

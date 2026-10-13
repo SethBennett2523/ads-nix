@@ -67,7 +67,10 @@ everything is unattended:
    `/var/lib/ads/data`. It restarts on failure; logs with
    `journalctl -u adsdv -b`.
 
-Write the SSD with `nix build .#adsdv-image` and `dd`, as above. Leads log in
+Write the SSD with `nix build .#adsdv-image` and `dd`, as above, or with
+`ads-install adsdv /dev/sdX` from a NixOS live USB. Either way, connect the
+car's SATA SSD through a **USB-to-SATA adapter**: `ads-install` only writes
+to USB drives, so it can never touch the bench machine's own disk. Leads log in
 as `uweai` over SSH and are in the `adsdv` group, so they can deploy to
 `/var/lib/ads` without becoming the service account.
 

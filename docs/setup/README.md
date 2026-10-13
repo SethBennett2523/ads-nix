@@ -1,22 +1,27 @@
 # Setting up your machine
 
-Pick the guide that matches what you have. Each one goes from nothing to a
-working system, and they all end up with the same tools and versions as
-everyone else.
+Pick the guide that matches the computer you have. Each one goes from a
+computer that works today to a working setup, and they all end up with the
+same tools and versions as everyone else.
 
 | You have | Your options | Guide |
 |---|---|---|
 | A Mac | Your department's dev shell, or a full Linux VM | [I have a Mac](mac.md) |
-| A Windows or Linux PC or laptop | An external bootable SSD, or a VM | [I have a PC or laptop](pc.md) |
+| A Windows or Linux PC or laptop | An external USB SSD you start from, or a VM | [I have a PC or laptop](pc.md) |
 | NixOS already | Add the society config to yours | [I already use NixOS](nixos.md) |
 
 All three finish with [First steps](first-steps.md): your password, your
 department's shell, and building the code.
 
-**Not sure?** If you're new to Linux and have a PC, the external SSD is the
-closest to "a laptop that just works", and it never touches your existing
-system. On a Mac, start with the dev shell and add the VM only if you need
-to run ROS.
+> **Your computer's own drive is never touched.** On a PC, the society's
+> system goes onto an external USB SSD, and that SSD is the drive you start
+> from. On a Mac, nothing is erased or replaced. The installer refuses to
+> write to any drive inside a computer.
+
+**Not sure which?** On a PC, the external SSD gives you the full system at
+full speed and leaves your computer exactly as it was when it's unplugged.
+On a Mac, start with the dev shell and add the VM only if you need to run
+ROS. New to Linux? Both guides assume that, and explain each step.
 
 ## What you'll be logging in as
 

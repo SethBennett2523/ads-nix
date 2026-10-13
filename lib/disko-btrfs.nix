@@ -4,10 +4,11 @@
 # excluded or wiped without touching the system, and zstd compression roughly
 # halves what bags and the Nix store take up.
 #
-# `device` only matters when partitioning a real drive; disko-install and the
-# image builders replace it. Mounts are by partition label, so the result
+# `device` is set by ads-install to the external drive it was given. The
+# default deliberately names no real drive, so nothing can ever partition a
+# computer's own disk by accident. Mounts are by partition label, so the result
 # boots from whichever port the drive is plugged into.
-{ device ? "/dev/sda", imageSize ? "32G", espSize ? "1G", ... }:
+{ device ? "/dev/disk/by-id/set-by-ads-install", imageSize ? "32G", espSize ? "1G", ... }:
 {
   disko.devices.disk.main = {
     type = "disk";

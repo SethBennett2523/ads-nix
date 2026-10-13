@@ -1,5 +1,6 @@
-# A member's x86 laptop or desktop, booted from a USB drive or installed on
-# an internal one. Hardware-independent: the same drive boots anywhere.
+# A member's x86 laptop or desktop, started from an external USB SSD (the
+# laptop's own drive is never touched). Hardware-independent: the same SSD
+# starts on any x86 machine.
 { lib, ... }:
 {
   imports = [ ../profiles/developer.nix ];
