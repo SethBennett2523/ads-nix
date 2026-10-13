@@ -10,9 +10,10 @@
   ads.remoteAdmin.enable = lib.mkDefault true;
 
   # For `nixos-rebuild build-vm` on any developer build: Plasma and RViz need
-  # more than the 1 GB default.
+  # more than the 1 GB default. Set your own in local.nix, e.g.
+  #   virtualisation.vmVariant.virtualisation.memorySize = 8192;
   virtualisation.vmVariant.virtualisation = {
-    memorySize = lib.mkDefault 8192;
+    memorySize = lib.mkDefault 4096;
     cores = lib.mkDefault 4;
   };
 }
