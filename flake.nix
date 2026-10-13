@@ -57,7 +57,11 @@
           cfgs = lib.filterAttrs (_: c: c.pkgs.stdenv.hostPlatform.system == system) self.nixosConfigurations;
           image = name: cfgs.${name}.config.system.build.diskoImages;
         in
-        lib.optionalAttrs (system == "x86_64-linux") {
+        {
+          # `sudo nix run github:SethBennett2523/ads-nix#ads-install -- dev-x86 /dev/sdX`
+          ads-install = ads.installer nixpkgs.legacyPackages.${system};
+        }
+        // lib.optionalAttrs (system == "x86_64-linux") {
           # Ready-to-write drive images: `nix build .#usb-dev-x86`, then dd the
           # result onto a USB drive. Building these needs KVM.
           usb-dev-x86 = image "dev-x86";

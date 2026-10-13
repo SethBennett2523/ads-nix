@@ -7,7 +7,7 @@
 # `device` only matters when partitioning a real drive; disko-install and the
 # image builders replace it. Mounts are by partition label, so the result
 # boots from whichever port the drive is plugged into.
-{ device ? "/dev/sda", imageSize ? "32G", espSize ? "1G" }:
+{ device ? "/dev/sda", imageSize ? "32G", espSize ? "1G", ... }:
 {
   disko.devices.disk.main = {
     type = "disk";

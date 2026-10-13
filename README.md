@@ -4,7 +4,7 @@ NixOS configuration for every machine UWE-FSAI runs: members' laptops (x86,
 x86 with NVIDIA, Apple Silicon), the in-car PC and, later, the Jetson. One
 pinned set of versions, so the code builds the same everywhere.
 
-**New member?** Start with [docs/QUICKSTART.md](docs/QUICKSTART.md).
+**New member?** Start with [docs/setup](docs/setup/README.md): guides for a Mac, a PC or laptop, and existing NixOS users.
 **Project lead?** [docs/RUNBOOK.md](docs/RUNBOOK.md) covers updates, the car
 and handover.
 
@@ -14,6 +14,13 @@ and handover.
 
 ```bash
 sudo nixos-rebuild switch --flake github:SethBennett2523/ads-nix#dev-x86
+```
+
+or onto a fresh drive, from any NixOS live USB:
+
+```bash
+sudo nix --extra-experimental-features 'nix-command flakes' run --accept-flake-config \
+  github:SethBennett2523/ads-nix#ads-install -- dev-x86 /dev/sdX
 ```
 
 | Build type | For | Login |
@@ -28,8 +35,8 @@ sudo nixos-rebuild switch --flake github:SethBennett2523/ads-nix#dev-x86
 On the car the stack runs as `adsdv`, a service account nobody logs in as.
 
 **2. As an input, with your own changes.** `nix flake init -t
-github:SethBennett2523/ads-nix` gives you a small flake in `/etc/nixos` that
-pulls this one in. Everything here is a *default*: anything you set in your
+github:SethBennett2523/ads-nix` gives you a small flake that pulls this one
+in ([guide](docs/setup/nixos.md)). Everything here is a *default*: anything you set in your
 `local.nix` wins, and your config never leaves your machine.
 
 **3. Just the parts you want.** Each module is inert until enabled, so an

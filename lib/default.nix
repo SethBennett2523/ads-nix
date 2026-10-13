@@ -19,6 +19,12 @@ in
 
   allModules = { imports = builtins.attrValues modules; };
 
+  # The ads-install script, for a given package set.
+  installer = pkgs: pkgs.callPackage ../pkgs/ads-install.nix {
+    disko = disko.packages.${pkgs.stdenv.hostPlatform.system}.disko;
+    flake = self;
+  };
+
   # The shared btrfs disk layout, for hosts that want it.
   diskoBtrfs = import ./disko-btrfs.nix;
 
@@ -26,7 +32,8 @@ in
   # flakes can call this instead of nixpkgs.lib.nixosSystem.
   mkSystem = { system, modules ? [ ], specialArgs ? { } }:
     lib.nixosSystem {
-      inherit system specialArgs;
+      inherit system;
+      specialArgs = { adsNix = self; } // specialArgs;
       modules = [
         self.nixosModules.default
         disko.nixosModules.disko

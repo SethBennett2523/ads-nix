@@ -1,11 +1,13 @@
 {
   description = "My UWE-FSAI machine";
 
-  # This file lives on YOUR machine (/etc/nixos), not in the society
-  # repository, so nothing of yours is ever tracked or pushed there.
+  # This file lives on YOUR machine (/etc/nixos), next to your existing
+  # configuration.nix, not in the society repository, so nothing of yours is
+  # ever tracked or pushed there. See docs/setup/nixos.md in ads-nix.
   #
   # Update to the newest society configuration with `ads-update`, or:
-  #   nix flake update ads-nix && sudo nixos-rebuild switch --flake /etc/nixos#my-machine
+  #   sudo nix flake update ads-nix --flake /etc/nixos
+  #   sudo nixos-rebuild switch --flake /etc/nixos#my-machine
 
   inputs = {
     ads-nix.url = "github:SethBennett2523/ads-nix";
@@ -18,11 +20,13 @@
     nixosConfigurations.my-machine = ads-nix.lib.mkSystem {
       system = "x86_64-linux";
       modules = [
-        # Pick ONE starting point. The profile switches on the full set; or
-        # delete it and enable only the parts you want, e.g.
-        #   ads.ros.enable = true;
+        # The society's developer set. Delete it and enable only the parts
+        # you want instead, e.g. `ads.ros.enable = true;` in local.nix.
         ads-nix.nixosModules.developer
+        # Your existing NixOS configuration, unchanged.
         ./hardware-configuration.nix
+        ./configuration.nix
+        # Your choices on top of the society defaults.
         ./local.nix
       ];
     };
