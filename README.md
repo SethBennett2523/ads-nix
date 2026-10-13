@@ -10,19 +10,22 @@ and handover.
 
 ## Three ways to use it
 
-**1. As-is.** Each machine type is a complete system:
+**1. As-is.** Each build type is a complete system:
 
 ```bash
 sudo nixos-rebuild switch --flake github:SethBennett2523/ads-nix#dev-x86
 ```
 
-| Machine type | For |
-|---|---|
-| `dev-x86` | any x86 laptop or desktop, from a USB drive or an internal disk |
-| `dev-x86-cuda` | the same, with the NVIDIA driver and CUDA |
-| `dev-aarch64` | a VM on an Apple Silicon Mac (UTM), or an ARM machine |
-| `incar-pc` | the car; starts the mission selector at boot with no input |
-| `car-sim` | the car's system as a VM on your laptop, with a virtual CAN bus |
+| Build type | For | Login |
+|---|---|---|
+| `dev-x86` | any x86 laptop or desktop, from a USB drive or an internal disk | `uweai` |
+| `dev-x86-cuda` | the same, with the NVIDIA driver and CUDA | `uweai` |
+| `vm-x86` | a VM on an x86 Windows, Linux or Intel Mac machine | `uweai` |
+| `vm-aarch64` | a VM on an Apple Silicon Mac (UTM) | `uweai` |
+| `adsdv` | the car (Autonomous Driving System, Designated Vehicle); starts the mission selector at boot with no input | leads only, over SSH |
+| `adsdv-sim` | the car's build as a VM on your laptop, with a virtual CAN bus | `uweai` |
+
+On the car the stack runs as `adsdv`, a service account nobody logs in as.
 
 **2. As an input, with your own changes.** `nix flake init -t
 github:SethBennett2523/ads-nix` gives you a small flake in `/etc/nixos` that
@@ -41,17 +44,31 @@ Modules: `base`, `users`, `ros`, `desktop`, `cuda`, `can`, `remote-admin`,
 `portable`, `vehicle`, plus the `developer` and `vehicle` profiles that switch
 on a sensible set.
 
-## Dev shells (any OS with Nix, including macOS)
+## Department shells (any OS with Nix, including macOS)
+
+For working on your own machine without installing NixOS:
 
 ```bash
-nix develop github:SethBennett2523/ads-nix          # ROS 2 Jazzy, colcon, vcstool
-nix develop github:SethBennett2523/ads-nix#humble   # for Quanser's QCar 2 nodes
-nix develop github:SethBennett2523/ads-nix#tools    # Python, OpenCV, linters; no ROS
+nix develop github:SethBennett2523/ads-nix#perception
 ```
 
-On a Mac the default shell is `tools`, because ROS through Nix is only
-partly supported on macOS. `#ros` is there to try; for full ROS, run the
-`dev-aarch64` VM.
+| Shell | Linux | macOS |
+|---|---|---|
+| `integration` | ROS 2 Jazzy, xacro, RViz, rqt, python-can, cantools, can-utils | python-can, can-utils |
+| `perception` | ROS 2 Jazzy, cv_bridge, PyTorch, Ultralytics, OpenCV | PyTorch, Ultralytics, OpenCV |
+| `planning` | ROS 2 Jazzy, RViz, ackermann_msgs, simple-pid | NumPy, SciPy, simple-pid |
+| `slam` | ROS 2 Jazzy, GTSAM (C++), RViz, Eigen | NumPy, SciPy, Eigen |
+| `simulation` | ROS 2 Jazzy, Gazebo (ros_gz), xacro, RViz, rqt | NumPy, pandas |
+| `default` | ROS 2 Jazzy, colcon, vcstool | general tools, no ROS |
+| `humble` | ROS 2 Humble, for Quanser's QCar 2 nodes | |
+| `tools` | Python, linters; no ROS | the same |
+
+All of them include NumPy, SciPy, Matplotlib, pytest, ruff and the ament
+linters' Python side, so the code style checks match CI. ROS through Nix is
+only partly supported on macOS, so Mac shells leave it out; `#ros` is there
+to try, and the `vm-aarch64` build gives full ROS on a Mac.
+
+GTSAM's Python bindings, which `graphslam_node` imports, aren't packaged yet.
 
 ## Checking a change
 

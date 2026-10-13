@@ -1,6 +1,8 @@
-# The default account. Its password is printed in this public repository, so
-# it is only ever good for the first console login: change it with `passwd`.
-# SSH never accepts passwords (see remote-admin.nix).
+# The developer login, `uweai` by default. Its password is printed in this
+# repository, so it is only ever good for the first console login: change it
+# with `passwd`. SSH never accepts passwords (see remote-admin.nix).
+#
+# The car's own software does not run as this user; see vehicle.nix.
 { config, lib, ... }:
 let
   cfg = config.ads.user;
@@ -11,13 +13,13 @@ in
 
     name = lib.mkOption {
       type = lib.types.str;
-      default = "ads";
+      default = "uweai";
       description = "Login name of the default account.";
     };
 
     description = lib.mkOption {
       type = lib.types.str;
-      default = "UWE-FSAI member";
+      default = "UWE-AI developer";
     };
 
     initialPassword = lib.mkOption {

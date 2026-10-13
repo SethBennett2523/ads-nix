@@ -1,6 +1,11 @@
-# The car's computer. It boots with no network and nobody at the keyboard,
-# so everything it needs happens unattended: the CAN bus comes up, then the
-# mission selector starts and waits for the vehicle's autonomous state.
+# ADSDV: the build that goes on the car itself (Autonomous Driving System,
+# Designated Vehicle). It boots with no network and nobody at the keyboard, so
+# everything happens unattended: the CAN bus comes up, then the mission
+# selector starts and waits for the vehicle's autonomous state.
+#
+# The stack runs as `adsdv`, a service account nobody logs in as. People
+# (project leads) log in as the normal developer user, over SSH, and are in
+# the `adsdv` group so they can deploy the workspace.
 { config, lib, pkgs, ... }:
 let
   cfg = config.ads.vehicle;
@@ -41,8 +46,8 @@ in
       };
       user = lib.mkOption {
         type = lib.types.str;
-        default = config.ads.user.name;
-        defaultText = lib.literalExpression "config.ads.user.name";
+        default = "adsdv";
+        description = "Service account the stack runs as. Created automatically; it has no login.";
       };
       workspace = lib.mkOption {
         type = lib.types.str;
@@ -84,12 +89,22 @@ in
       ipv6.method = "disabled";
     };
 
+    users.users.${auto.user} = {
+      isSystemUser = true;
+      group = auto.user;
+      extraGroups = [ "dialout" ];
+      home = "/var/lib/ads";
+    };
+    users.groups.${auto.user} = { };
+    users.users.${config.ads.user.name}.extraGroups = lib.mkIf config.ads.user.enable [ auto.user ];
+
+    # Group-writable, so leads in the adsdv group can deploy the workspace.
     systemd.tmpfiles.rules = [
-      "d /var/lib/ads 0755 ${auto.user} users -"
-      "d ${auto.dataDir} 0755 ${auto.user} users -"
+      "d /var/lib/ads 2775 ${auto.user} ${auto.user} -"
+      "d ${auto.dataDir} 2775 ${auto.user} ${auto.user} -"
     ];
 
-    systemd.services.ads = lib.mkIf auto.enable (
+    systemd.services.adsdv = lib.mkIf auto.enable (
       let canUnit = "can-${config.ads.can.hardware.interface}.service";
       in {
         description = "ADS mission selector";

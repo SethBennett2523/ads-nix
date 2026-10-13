@@ -8,8 +8,8 @@ let
     text = ''
       flake=''${ADS_FLAKE:-github:SethBennett2523/ads-nix}
       if [ $# -ne 2 ]; then
-        echo "usage: sudo ads-install <machine-type> <disk>"
-        echo "machine types: dev-x86 dev-x86-cuda dev-aarch64 incar-pc"
+        echo "usage: sudo ads-install <build-type> <disk>"
+        echo "build types: dev-x86 dev-x86-cuda vm-x86 vm-aarch64 adsdv"
         echo
         lsblk -d -o NAME,SIZE,MODEL,TRAN
         exit 1

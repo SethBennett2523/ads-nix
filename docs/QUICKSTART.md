@@ -39,7 +39,7 @@ installer and the drive you'll keep.
 
 ### First boot
 
-1. Log in as `ads` with password `uwe-fsai`.
+1. Log in as `uweai` with password `uwe-fsai`.
 2. Run `passwd` and set your own password. The default is printed in a
    public repository.
 3. Connect to wifi from the network icon.
@@ -52,17 +52,18 @@ The drive grows to fill its full size on first boot.
 Apple Silicon Macs can't boot this system from USB, so there are two
 options, and most people want the first.
 
-**Dev shells (recommended).** Install Nix from
-[nixos.org/download](https://nixos.org/download), then in a terminal:
+**Your department's shell (recommended).** Install Nix from
+[nixos.org/download](https://nixos.org/download), then in a terminal, with
+your department's name:
 
 ```bash
-nix develop github:SethBennett2523/ads-nix
+nix develop github:SethBennett2523/ads-nix#perception
 ```
 
-That gives you Python, OpenCV, the linters and the rest, natively. Enough for
-perception, training, planning maths, docs and tooling. ROS is the part that
-isn't reliable on macOS through Nix; `nix develop github:SethBennett2523/ads-nix#ros`
-is there to try.
+Departments: `integration`, `perception`, `planning`, `slam`, `simulation`.
+That gives you your department's Python libraries and tools, natively.
+ROS is the part that isn't reliable on macOS through Nix;
+`nix develop github:SethBennett2523/ads-nix#ros` is there to try.
 
 **Full system in a VM**, for anything that needs ROS, RViz or Gazebo:
 
@@ -73,9 +74,25 @@ is there to try.
    ```bash
    sudo nix --extra-experimental-features 'nix-command flakes' \
      run github:nix-community/disko/latest#disko-install -- \
-     --flake github:SethBennett2523/ads-nix#dev-aarch64 --disk main /dev/vda
+     --flake github:SethBennett2523/ads-nix#vm-aarch64 --disk main /dev/vda
    ```
 3. Remove the ISO from the VM, reboot, and follow *First boot* above.
+
+## Any other Linux, without installing NixOS
+
+Install Nix from [nixos.org/download](https://nixos.org/download) and use
+your department's shell, as above. On Linux it includes the full ROS 2 setup.
+
+## A virtual machine instead
+
+Use `vm-x86` (or `vm-aarch64` on Apple Silicon) with the installer steps
+above, inside UTM, virt-manager or GNOME Boxes. To try the system without
+installing anything, on a machine that already has Nix:
+
+```bash
+nixos-rebuild build-vm --flake github:SethBennett2523/ads-nix#vm-x86 && ./result/bin/run-vm-x86-vm
+nixos-rebuild build-vm --flake github:SethBennett2523/ads-nix#adsdv-sim && ./result/bin/run-adsdv-sim-vm   # the car's build
+```
 
 ## You already run NixOS
 

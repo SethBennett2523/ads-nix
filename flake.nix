@@ -40,11 +40,15 @@
       # Build any of these as-is:
       #   sudo nixos-rebuild switch --flake github:SethBennett2523/ads-nix#dev-x86
       nixosConfigurations = {
+        # Developer machines: bare metal or a USB drive.
         dev-x86 = ads.mkSystem { system = "x86_64-linux"; modules = [ ./hosts/dev-x86.nix ]; };
         dev-x86-cuda = ads.mkSystem { system = "x86_64-linux"; modules = [ ./hosts/dev-x86-cuda.nix ]; };
-        dev-aarch64 = ads.mkSystem { system = "aarch64-linux"; modules = [ ./hosts/dev-aarch64.nix ]; };
-        incar-pc = ads.mkSystem { system = "x86_64-linux"; modules = [ ./hosts/incar-pc.nix ]; };
-        car-sim = ads.mkSystem { system = "x86_64-linux"; modules = [ ./hosts/incar-pc.nix ./hosts/car-sim.nix ]; };
+        # Developer virtual machines.
+        vm-x86 = ads.mkSystem { system = "x86_64-linux"; modules = [ ./hosts/vm-x86.nix ]; };
+        vm-aarch64 = ads.mkSystem { system = "aarch64-linux"; modules = [ ./hosts/vm-aarch64.nix ]; };
+        # The car (Autonomous Driving System, Designated Vehicle), and the same as a VM.
+        adsdv = ads.mkSystem { system = "x86_64-linux"; modules = [ ./hosts/adsdv.nix ]; };
+        adsdv-sim = ads.mkSystem { system = "x86_64-linux"; modules = [ ./hosts/adsdv-sim.nix ]; };
         installer = ads.mkSystem { system = "x86_64-linux"; modules = [ ./hosts/installer.nix ]; };
       };
 
@@ -58,14 +62,15 @@
           # result onto a USB drive. Building these needs KVM.
           usb-dev-x86 = image "dev-x86";
           usb-dev-x86-cuda = image "dev-x86-cuda";
-          incar-pc-image = image "incar-pc";
+          vm-x86-disk = image "vm-x86";
+          adsdv-image = image "adsdv";
           # A boot stick that installs any of the above onto another drive,
           # with no KVM needed to build it.
           installer-iso = cfgs.installer.config.system.build.isoImage;
-          car-sim-vm = cfgs.car-sim.config.system.build.vm;
+          adsdv-sim-vm = cfgs.adsdv-sim.config.system.build.vm;
         }
         // lib.optionalAttrs (system == "aarch64-linux") {
-          usb-dev-aarch64 = image "dev-aarch64";
+          vm-aarch64-disk = image "vm-aarch64";
         });
 
       devShells = lib.genAttrs shellSystems (system:

@@ -53,7 +53,7 @@ nix build .#installer-iso --accept-flake-config
 
 Attach `result/iso/*.iso` to a GitHub release as `ads-installer.iso`.
 
-## The car
+## The car (ADSDV)
 
 The in-car PC boots its SATA SSD with no network and no keyboard, so
 everything is unattended:
@@ -62,12 +62,14 @@ everything is unattended:
 2. NetworkManager puts the wired port on `10.10.0.10/24`. Set a travel
    router's LAN to `10.10.0.1/24` and SSH in from the paddock.
 3. `can0` comes up at 500 kbit/s when the adapter appears.
-4. `ads.service` sources `/var/lib/ads/ads-ws/install/setup.bash` and runs
+4. `adsdv.service`, running as the `adsdv` service account, sources `/var/lib/ads/ads-ws/install/setup.bash` and runs
    `ros2 launch launch_files ads_launch.py can_interface:=can0`. Bags land in
    `/var/lib/ads/data`. It restarts on failure; logs with
-   `journalctl -u ads -b`.
+   `journalctl -u adsdv -b`.
 
-Write the SSD with `nix build .#incar-pc-image` and `dd`, as above.
+Write the SSD with `nix build .#adsdv-image` and `dd`, as above. Leads log in
+as `uweai` over SSH and are in the `adsdv` group, so they can deploy to
+`/var/lib/ads` without becoming the service account.
 
 **Gap to close:** the ADS workspace isn't packaged in Nix yet, so after
 writing the image, the built workspace has to be copied to
@@ -78,7 +80,7 @@ image complete on its own.
 Test the car's system without the car:
 
 ```bash
-nixos-rebuild build-vm --flake .#car-sim && ./result/bin/run-car-sim-vm
+nixos-rebuild build-vm --flake .#adsdv-sim && ./result/bin/run-adsdv-sim-vm
 ```
 
 **Competition:** Formula Student restricts wireless links to the vehicle.

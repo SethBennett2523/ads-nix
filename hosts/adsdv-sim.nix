@@ -1,8 +1,9 @@
-# The car's configuration as a VM on your laptop, with a virtual CAN bus in
-# place of the real one:  nixos-rebuild build-vm --flake .#car-sim
+# The ADSDV build as a VM on your laptop, with a virtual CAN bus in place of
+# the real one:  nixos-rebuild build-vm --flake .#adsdv-sim
 { lib, ... }:
 {
-  networking.hostName = lib.mkForce "car-sim";
+  imports = [ ./adsdv.nix ];
+  networking.hostName = lib.mkForce "adsdv-sim";
   ads.cuda.enable = lib.mkForce false;
   ads.can = {
     virtual.enable = lib.mkForce true;

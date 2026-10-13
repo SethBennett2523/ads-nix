@@ -19,8 +19,11 @@ for h in $(nix eval --no-write-lock-file --json .#nixosConfigurations --apply bu
   check "$h" "nixosConfigurations.$h.config.system.build.toplevel.drvPath"
 done
 echo "Images"
-for p in usb-dev-x86 usb-dev-x86-cuda incar-pc-image installer-iso car-sim-vm; do
+for p in usb-dev-x86 usb-dev-x86-cuda vm-x86-disk adsdv-image installer-iso adsdv-sim-vm; do
   check "$p" "packages.x86_64-linux.$p.drvPath"
+done
+for p in vm-aarch64-disk; do
+  check "$p" "packages.aarch64-linux.$p.drvPath"
 done
 echo "Dev shells"
 for s in x86_64-linux aarch64-linux aarch64-darwin; do
