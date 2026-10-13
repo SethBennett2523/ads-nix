@@ -8,4 +8,11 @@
   ads.desktop.enable = lib.mkDefault true;
   ads.can.enable = lib.mkDefault true;
   ads.remoteAdmin.enable = lib.mkDefault true;
+
+  # For `nixos-rebuild build-vm` on any developer build: Plasma and RViz need
+  # more than the 1 GB default.
+  virtualisation.vmVariant.virtualisation = {
+    memorySize = lib.mkDefault 8192;
+    cores = lib.mkDefault 4;
+  };
 }
