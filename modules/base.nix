@@ -19,6 +19,12 @@ let
     exec sudo nixos-rebuild switch --flake "$flake" "$@"
   '';
 
+  # Applies changes to /etc/nixos/local.nix without fetching anything new.
+  ads-apply = pkgs.writeShellScriptBin "ads-apply" ''
+    set -euo pipefail
+    exec sudo nixos-rebuild switch --flake ${lib.escapeShellArg cfg.updateFlake} "$@"
+  '';
+
   ads-version = pkgs.writeShellScriptBin "ads-version" ''
     echo "ads-nix revision: ${toString config.system.configurationRevision}"
     echo "NixOS:            ${config.system.nixos.label}"
@@ -68,6 +74,7 @@ in
 
     environment.systemPackages = with pkgs; [
       ads-update
+      ads-apply
       ads-version
       # editors
       vim

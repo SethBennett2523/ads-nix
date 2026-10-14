@@ -39,10 +39,51 @@ configuration whenever a lead says there's an update:
 ads-update
 ```
 
+It keeps any changes you've made in `local.nix` (next step).
+
 (On a Mac dev shell there's nothing to update: `nix develop` always uses the
 latest.)
 
-## 3. Connect to GitHub
+## 3. Make it yours (optional)
+
+Everything the society sets up is a default you can change. On the SSD or a
+VM, your changes go in one file, `/etc/nixos/local.nix`. Society updates
+never overwrite it.
+
+```bash
+sudo nano /etc/nixos/local.nix
+```
+
+It has examples to start from: remove the `#` at the start of a line to use
+it. Save with **Ctrl + O**, Enter, and exit with **Ctrl + X**. Then apply
+your change:
+
+```bash
+ads-apply
+```
+
+If something goes wrong, restart and pick the previous entry in the start-up
+menu, which is your system as it was before the change.
+
+<details>
+<summary>▶ What's in /etc/nixos?</summary>
+
+- `flake.nix` says which build this machine is (for example `vm-x86`) and
+  adds `local.nix` on top. You shouldn't need to edit it.
+- `local.nix` is yours. Anything you set here wins over the society's
+  defaults, from extra programs to a different desktop.
+- `flake.lock` records exactly which version of the society's configuration
+  you're on. `ads-update` moves it forward.
+
+| Command | What it does |
+|---|---|
+| `ads-apply` | apply your changes to `local.nix` |
+| `ads-update` | get the society's latest configuration, keeping your changes |
+| `ads-version` | show which version you're on |
+
+</details>
+
+## 4. Connect to GitHub
 
 The code is on GitHub. You need a free GitHub account, and a *key* so your
 computer can prove it's you. Create one:
@@ -67,14 +108,14 @@ one (`id_ed25519`, without `.pub`).
 
 </details>
 
-## 4. Get the code
+## 5. Get the code
 
 ```bash
 git clone git@github.com:SethBennett2523/uwe-fsai-ws.git
 cd uwe-fsai-ws
 ```
 
-## 5. Enter your department's shell
+## 6. Enter your department's shell
 
 Always build inside your department's shell. It has the exact ROS and
 libraries everyone else builds against:
@@ -85,7 +126,7 @@ nix develop github:SethBennett2523/ads-nix#perception --accept-flake-config
 
 Departments: `integration`, `perception`, `planning`, `slam`, `simulation`.
 
-## 6. Build and run
+## 7. Build and run
 
 On Linux (the SSD, a VM, or NixOS), build your department's packages, for
 example:

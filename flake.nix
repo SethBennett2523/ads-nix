@@ -39,18 +39,9 @@
 
       # Build any of these as-is:
       #   sudo nixos-rebuild switch --flake github:SethBennett2523/ads-nix#dev-x86
-      nixosConfigurations = {
-        # Developer machines: bare metal or a USB drive.
-        dev-x86 = ads.mkSystem { system = "x86_64-linux"; modules = [ ./hosts/dev-x86.nix ]; };
-        dev-x86-cuda = ads.mkSystem { system = "x86_64-linux"; modules = [ ./hosts/dev-x86-cuda.nix ]; };
-        # Developer virtual machines.
-        vm-x86 = ads.mkSystem { system = "x86_64-linux"; modules = [ ./hosts/vm-x86.nix ]; };
-        vm-aarch64 = ads.mkSystem { system = "aarch64-linux"; modules = [ ./hosts/vm-aarch64.nix ]; };
-        # The car (Autonomous Driving System, Designated Vehicle), and the same as a VM.
-        adsdv = ads.mkSystem { system = "x86_64-linux"; modules = [ ./hosts/adsdv.nix ]; };
-        adsdv-sim = ads.mkSystem { system = "x86_64-linux"; modules = [ ./hosts/adsdv-sim.nix ]; };
-        installer = ads.mkSystem { system = "x86_64-linux"; modules = [ ./hosts/installer.nix ]; };
-      };
+      # Every build type in lib/default.nix (`hosts`): dev-x86, dev-x86-cuda,
+      # vm-x86, vm-aarch64, adsdv (the car), adsdv-sim and the installer.
+      nixosConfigurations = lib.mapAttrs (name: _: ads.mkHost name { }) ads.hosts;
 
       packages = lib.genAttrs linuxSystems (system:
         let
@@ -84,6 +75,11 @@
         member = {
           path = ./templates/member;
           description = "Your own machine, built on the UWE-FSAI configuration";
+        };
+        # Written to /etc/nixos by ads-install; @HOST@ is the build type.
+        installed = {
+          path = ./templates/installed;
+          description = "An installed machine's own flake: a build type plus local.nix";
         };
         default = self.templates.member;
       };

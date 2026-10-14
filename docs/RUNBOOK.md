@@ -4,9 +4,9 @@
 
 1. Change the configuration on a branch and run `./scripts/check.sh`.
 2. Merge to `main` once CI is green.
-3. Tell members to run `ads-update`. Machines built straight from this repo
-   rebuild from `main`; members on the template pull the new revision into
-   their own lock file first.
+3. Tell members to run `ads-update`. It moves their machine's
+   `/etc/nixos/flake.lock` to the new revision of this repo and switches,
+   keeping whatever they've put in `/etc/nixos/local.nix`.
 
 Rolling back is the boot menu: every rebuild keeps the previous systems
 selectable, so a bad update can always be undone by rebooting into the last

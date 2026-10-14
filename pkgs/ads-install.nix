@@ -89,10 +89,20 @@ writeShellApplication {
     disko --mode destroy,format,mount --yes-wipe-all-disks \
       --argstr device "$disk" ${flake}/lib/disko-btrfs.nix
 
+    # The machine gets its own small flake in /etc/nixos: the build type
+    # plus local.nix, which is where its user makes changes.
+    echo
+    echo "Writing /etc/nixos..."
+    mkdir -p /mnt/etc/nixos
+    sed "s/@HOST@/$host/g" ${flake}/templates/installed/flake.nix > /mnt/etc/nixos/flake.nix
+    cp ${flake}/templates/installed/local.nix /mnt/etc/nixos/local.nix
+    chmod 644 /mnt/etc/nixos/flake.nix /mnt/etc/nixos/local.nix
+    nix --extra-experimental-features 'nix-command flakes' flake lock path:/mnt/etc/nixos
+
     echo
     echo "Installing $host. This downloads several GB; it can take a while."
     nixos-install --root /mnt --no-root-password --no-channel-copy \
-      --flake "${flake}#$host" \
+      --flake "path:/mnt/etc/nixos#$host" \
       --option extra-substituters https://ros.cachix.org \
       --option extra-trusted-public-keys ros.cachix.org-1:dSyZxI8geDCJrwgvCOHDoAfOm5sV1wCPjBkKL+38Rvo=
 

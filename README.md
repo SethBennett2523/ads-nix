@@ -23,6 +23,11 @@ sudo nix --extra-experimental-features 'nix-command flakes' run --accept-flake-c
 
 The [setup guides](docs/setup/README.md) walk through this step by step.
 
+Each installed machine gets its own small flake in `/etc/nixos`: its build
+type plus a `local.nix` where its user changes anything they like
+([templates/installed](templates/installed)). `ads-apply` applies local
+changes; `ads-update` pulls the society's latest underneath them.
+
 | Build type | For | Login |
 |---|---|---|
 | `dev-x86` | any x86 laptop or desktop, started from an external USB SSD | `uweai` |
