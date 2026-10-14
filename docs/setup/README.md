@@ -11,7 +11,13 @@ same tools and versions as everyone else.
 | NixOS already | Add the society config to yours | [I already use NixOS](nixos.md) |
 
 All three finish with [First steps](first-steps.md): your password, your
-department's shell, and building the code.
+department's shell, and building the code. Then
+[Your first ROS project](first-ros-node.md) takes you from an empty folder to
+two ROS nodes talking to each other, assuming you've never used ROS.
+
+**Starting from nothing with an external SSD?** Follow
+[I have a PC or laptop](pc.md) steps 1 to 7, then [First steps](first-steps.md)
+1 and 2, then [Your first ROS project](first-ros-node.md).
 
 > **Your computer's own drive is never touched.** On a PC, the society's
 > system goes onto an external USB SSD, and that SSD is the drive you start

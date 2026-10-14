@@ -1,7 +1,8 @@
 # First steps
 
 You've got a working system, or a dev shell on a Mac. This gets you to
-building the code.
+building the code. To learn ROS by making your own small project first, do
+steps 1 and 2 here and then [Your first ROS project](first-ros-node.md).
 
 ## 1. Change the password
 
@@ -140,6 +141,10 @@ ros2 pkg list | grep cone
 Use the package names from your department's folder under `src/`. Not every
 package in the workspace builds yet, so build yours rather than the whole
 tree.
+
+**New to ROS?** [Your first ROS project](first-ros-node.md) walks you through
+making a package, writing two nodes that talk to each other, and running
+them, before you add your own package to the team's code.
 
 On a Mac shell there's no ROS, so run your department's Python directly, for
 example scripts and training code. To run ROS nodes, use the VM.
