@@ -52,6 +52,10 @@ nix build .#installer-iso --accept-flake-config
 ```
 
 Attach `result/iso/*.iso` to a GitHub release as `ads-installer.iso`.
+It's the NixOS minimal installer, the same one the setup guides use, with
+`ads-install` built in, so `sudo ads-install dev-x86 /dev/sdX` replaces the
+long `nix run` line. The guides use the official minimal ISO from
+nixos.org until this one is published.
 
 ## The car (ADSDV)
 

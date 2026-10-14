@@ -33,8 +33,41 @@ see a line ending in `$` again.
 
 ## 2. Get online and up to date
 
-Connect to wifi from the network icon. Then fetch the latest society
-configuration whenever a lead says there's an update:
+Connect to Wi-Fi from the network icon at the bottom right.
+
+For **eduroam** (university Wi-Fi), click **eduroam** → **Connect**. A
+settings window opens: on its **Wi-Fi Security** tab, set these, then click
+**OK**:
+
+| Setting | Value |
+|---|---|
+| Security | WPA/WPA2 Enterprise |
+| Authentication | Protected EAP (PEAP) |
+| CA certificate | leave empty |
+| Inner authentication | MSCHAPv2 |
+| Username | your UWE username followed by `@uwe.ac.uk`, like `an2-other@uwe.ac.uk` |
+| Password | your UWE password |
+
+<details>
+<summary>▶ The window looks different, or it won't connect</summary>
+
+Do it from Konsole instead, with the same commands as the installer. Put
+your UWE username in place of `an2-other`:
+
+```bash
+nmcli connection delete eduroam
+nmcli connection add type wifi con-name eduroam ssid eduroam wifi-sec.key-mgmt wpa-eap 802-1x.eap peap 802-1x.phase2-auth mschapv2 802-1x.identity an2-other@uwe.ac.uk
+nmcli --ask connection up eduroam
+```
+
+The first line removes any half-finished eduroam setup (it's fine if it
+says there isn't one). The last asks for your UWE password; nothing appears
+as you type.
+
+</details>
+
+Then fetch the latest society configuration whenever a lead says there's an
+update:
 
 ```bash
 ads-update

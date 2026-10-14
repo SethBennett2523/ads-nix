@@ -24,6 +24,12 @@ two ROS nodes talking to each other, assuming you've never used ROS.
 > from. On a Mac, nothing is erased or replaced. The installer refuses to
 > write to any drive inside a computer.
 
+**Every install starts from the NixOS minimal installer:** a text-only
+system you start from a USB stick or load into a VM. There's no desktop
+while installing, so you'll type a handful of commands, and the guides give
+each one. Once installed, you get the full KDE Plasma desktop. Keep the
+guide open on your phone while you install.
+
 **Not sure which?** On a PC, the external SSD gives you the full system at
 full speed and leaves your computer exactly as it was when it's unplugged.
 On a Mac, start with the dev shell and add the VM only if you need to run

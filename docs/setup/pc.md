@@ -35,8 +35,10 @@ when you click it, for extra help if you need it.
 - **Booting / starting up from a drive:** when a computer turns on, it loads
   its operating system from a drive. Normally that's the internal one; you
   can tell it to use a USB drive instead, just for that start-up.
-- **Terminal:** a window where you type commands instead of clicking. You'll
-  type or paste a few; this guide gives you every one, exactly.
+- **Terminal** or **command line:** where you type commands instead of
+  clicking. The installer is nothing but this: a screen of text with no
+  mouse or windows. You'll type a few commands; this guide gives you every
+  one, exactly.
 
 </details>
 
@@ -46,7 +48,8 @@ when you click it, for extra help if you need it.
 |---|---|
 | **A working computer** | The PC or laptop you'll use, running Windows or any Linux. It needs a USB port, and works best with 8 GB of memory or more. |
 | **An external USB SSD** | 128 GB or larger. This becomes your NixOS drive. It can be brand new, or formatted as NTFS, exFAT or anything else: **everything on it will be erased**. |
-| **A USB stick** | 4 GB or larger, for the installer. Also erased. You only need it once, so it can be borrowed. |
+| **A USB stick** | 2 GB or larger, for the installer. Also erased. You only need it once, so it can be borrowed. |
+| **This guide on another screen** | Your phone is fine. While installing, your computer shows only text, so you'll read the commands from here. |
 | **Internet** | Wi-Fi is fine. |
 | **About an hour** | Most of it is waiting for downloads. |
 
@@ -126,8 +129,9 @@ This doesn't affect anything else.
 You can do this on any computer: Windows, macOS or Linux.
 
 1. Go to [nixos.org/download](https://nixos.org/download). Under *NixOS: the
-   Linux distribution*, download the **Graphical ISO image** for **64-bit
-   Intel/AMD**. It's a single file of about 3 GB ending in `.iso`.
+   Linux distribution*, download the **Minimal ISO image** for **64-bit
+   Intel/AMD**. It's a single file of about 1.5 GB ending in `.iso`. Not the
+   *Graphical* one: these guides are written for the minimal one.
 2. Install [balenaEtcher](https://etcher.balena.io) (free) and open it.
 3. Plug in the **USB stick**. Not the SSD yet: keeping the SSD unplugged
    means you can't pick it by mistake.
@@ -231,8 +235,23 @@ for the BitLocker key again.
 3. A list of drives appears. Choose the USB stick: it may say *USB*, *UEFI:*
    followed by the stick's name, or just its brand.
 4. A NixOS menu appears. Press **Enter** on the first option.
-5. After a minute you'll see a desktop. You're now running NixOS from the
-   stick. Nothing has been installed anywhere.
+5. Text scrolls past for a minute, then stops at a line ending like this:
+   ```
+   [nixos@nixos:~]$
+   ```
+   That's the *prompt*: NixOS is running from the stick and waiting for you
+   to type a command. The installer is text only, with no desktop or mouse.
+   Nothing has been installed anywhere.
+
+<details>
+<summary>▶ The text is too small to read</summary>
+
+Type this and press Enter:
+```bash
+setfont ter-v32n
+```
+
+</details>
 
 <details>
 <summary>▶ It just starts Windows, or the stick isn't in the list</summary>
@@ -246,33 +265,94 @@ for the BitLocker key again.
 
 ## Step 6: Install onto the SSD
 
-Now you'll find the SSD, check it really is the SSD, and install onto it.
+Now you'll get online, find the SSD, check it really is the SSD, and install
+onto it. Keep this guide open on your phone or another computer: you'll type
+each command yourself, as there's no copy and paste in the installer.
 
-1. **Connect to Wi-Fi:** click the network icon at the bottom right of the
-   screen and choose your network.
-2. **Open this guide** in the web browser on the installer (Firefox, in the
-   application menu at the bottom left) so you can copy the commands.
-3. **Open a terminal:** application menu → search for **Konsole** → open it.
+<details>
+<summary>▶ How do I type commands?</summary>
+
+- Type the command exactly as shown, including spaces and punctuation, then
+  press **Enter**.
+- Made a mistake before pressing Enter? Use **Backspace**, or the **Left**
+  and **Right** arrow keys to move along the line.
+- The **Up arrow** brings back your last command, to fix and run again.
+- A command has finished when the `[nixos@nixos:~]$` prompt comes back.
+- **Ctrl + C** stops a command that's still running.
+
+</details>
+
+1. **Set your keyboard.** The installer starts with a US keyboard layout. On
+   a UK keyboard, type this first, so that keys like `@`, `"` and `#` type
+   what's printed on them:
+   ```bash
+   sudo loadkeys uk
+   ```
+   For other layouts, use `de`, `fr`, `es` and so on in place of `uk`.
+2. **Get online.** Pick whichever you have:
+   - **A network cable, or your phone's USB tethering:** this works by
+     itself. Skip to the check below.
+   - **eduroam (university Wi-Fi):** type these two commands. In the first,
+     put your UWE username in place of `an2-other`, keeping `@uwe.ac.uk`:
+     ```bash
+     nmcli connection add type wifi con-name eduroam ssid eduroam wifi-sec.key-mgmt wpa-eap 802-1x.eap peap 802-1x.phase2-auth mschapv2 802-1x.identity an2-other@uwe.ac.uk
+     nmcli --ask connection up eduroam
+     ```
+     The second asks for your UWE password. **Nothing appears as you
+     type**; that's normal. Press Enter, and it should say *Connection
+     successfully activated*.
+   - **Home Wi-Fi or a phone hotspot:** type `nmtui` and press Enter. Use the
+     arrow keys and Enter: choose **Activate a connection**, pick your
+     network, type its password, then choose **Back** and **Quit**.
+
+   Then check you're online:
+   ```bash
+   ping -c 3 nixos.org
+   ```
+   Three lines containing *bytes from* means you're online. *Temporary
+   failure in name resolution* or *Network is unreachable* means you're not
+   yet: wait a few seconds and try again.
 
    <details>
-   <summary>▶ How do I use the terminal?</summary>
+   <summary>▶ eduroam didn't connect</summary>
 
-   Click in the window and type, or paste, a command, then press **Enter**.
-   To paste in Konsole, use **Ctrl + Shift + V** (not just Ctrl + V), or
-   right-click → Paste. Some commands take a while and print a lot; that's
-   normal. When it's ready for the next command, you'll see a line ending in
-   `$` again.
+   - **A typo in the first command:** type
+     `nmcli connection delete eduroam`, then both commands again.
+   - **"Secrets were required, but not provided":** the password was wrong
+     or took too long. Run `nmcli --ask connection up eduroam` again.
+   - **Still nothing:** check your username works by logging in to a UWE
+     website with it. Out of range of eduroam, or still stuck, use a phone
+     hotspot for the install instead.
 
    </details>
 
-4. **Look at the drives *before* plugging in the SSD.** With the SSD still
+   <details>
+   <summary>▶ What do the eduroam settings mean?</summary>
+
+   They're UWE's eduroam settings, from
+   [UWE IT's own guide](https://www.uwe.ac.uk/-/media/uwe/documents/study/its-wifi-on-android-2020.pdf),
+   written out for NetworkManager, the program that manages the network:
+
+   | In the command | UWE's setting |
+   |---|---|
+   | `ssid eduroam` | network name: eduroam |
+   | `wifi-sec.key-mgmt wpa-eap` | security: WPA Enterprise (a username and password, not one shared password) |
+   | `802-1x.eap peap` | EAP method: PEAP |
+   | `802-1x.phase2-auth mschapv2` | phase 2 authentication: MSCHAPV2 |
+   | `802-1x.identity an2-other@uwe.ac.uk` | identity: your UWE username followed by `@uwe.ac.uk` |
+
+   UWE's guide says not to validate a CA certificate, so there isn't one.
+
+   </details>
+
+3. **Look at the drives *before* plugging in the SSD.** With the SSD still
    unplugged, type:
    ```bash
    lsblk -d -o NAME,SIZE,TRAN,MODEL
    ```
    This lists the drives the computer can see. You'll see your computer's
    own drive (often called `nvme0n1` or `sda`) and the installer stick.
-5. **Plug in the SSD**, wait five seconds, and run the same command again
+4. **Plug in the SSD**, wait five seconds, and run the same command again
    (press the **Up arrow** key, then **Enter**). **One new line has
    appeared: that is your SSD.** Check it says `usb` and that the size
    matches your SSD. Remember its NAME, for example `sdb`.
@@ -297,20 +377,44 @@ Now you'll find the SSD, check it really is the SSD, and install onto it.
 
    </details>
 
-6. **Install.** Type the command below, but replace `sdb` at the end with
+5. **Install.** Type the command below, but replace `sdb` at the end with
    your SSD's name. If the computer has an **NVIDIA** graphics card, change
    `dev-x86` to `dev-x86-cuda`.
    ```bash
-   sudo nix --extra-experimental-features 'nix-command flakes' run --accept-flake-config \
-     github:SethBennett2523/ads-nix#ads-install -- dev-x86 /dev/sdb
+   sudo nix --extra-experimental-features 'nix-command flakes' run --accept-flake-config github:SethBennett2523/ads-nix#ads-install -- dev-x86 /dev/sdb
    ```
-7. **Check and confirm.** It shows the drive it's about to use. Check the
+   It's one long line. Keep typing when you reach the edge of the screen,
+   and it carries on onto the next line by itself. Press Enter only at the
+   end.
+
+   <details>
+   <summary>▶ Typing it in pieces</summary>
+
+   It's easier to type accurately a piece at a time. There's one space
+   between each piece:
+
+   | Piece | What it means |
+   |---|---|
+   | `sudo nix` | run Nix with permission to set up drives |
+   | `--extra-experimental-features 'nix-command flakes'` | switch on the Nix features the society's setup uses (two dashes at the start, straight quote marks) |
+   | `run --accept-flake-config` | run a program, using the download sources the society's setup lists |
+   | `github:SethBennett2523/ads-nix#ads-install` | the program: the society's installer, fetched from GitHub. No spaces |
+   | `--` | the end of Nix's options. Everything after this goes to the installer |
+   | `dev-x86` | what to install: a developer machine |
+   | `/dev/sdb` | where to install it: your SSD |
+
+   On a UK keyboard after `sudo loadkeys uk`, `#` is the key next to Enter.
+   Without it, `#` is **Shift + 3**.
+
+   </details>
+
+6. **Check and confirm.** It shows the drive it's about to use. Check the
    size and name are your SSD's, then type the drive name (for example
    `/dev/sdb`) and press Enter. If anything looks wrong, just press Enter
    without typing: nothing will be changed.
-8. **Wait.** It sets up the SSD, then downloads the system straight onto it.
+7. **Wait.** It sets up the SSD, then downloads the system straight onto it.
    This is several GB and usually takes 15 to 45 minutes. When it prints
-   **Done**, open the application menu and **Shut Down**.
+   **Done**, type `poweroff` and press Enter.
 
 <details>
 <summary>▶ Does my computer have an NVIDIA graphics card?</summary>
@@ -390,7 +494,7 @@ These steps use VirtualBox on Windows. On Linux, see
 [Linux host](#linux-host) below.
 
 1. Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (free),
-   and download the NixOS **Graphical ISO image, 64-bit Intel/AMD** from
+   and download the NixOS **Minimal ISO image, 64-bit Intel/AMD** from
    [nixos.org/download](https://nixos.org/download).
 2. In VirtualBox, click **New**:
    - Name: `uweai`. ISO Image: the NixOS `.iso`. Type: **Linux**, Version:
@@ -402,17 +506,20 @@ These steps use VirtualBox on Windows. On Linux, see
 3. Select the VM → **Settings** → **Display** → set Video Memory to
    **128 MB** → OK.
 4. Click **Start**. Press Enter on the first NixOS menu option, and wait for
-   the desktop.
-5. Open **Konsole** (application menu → search *Konsole*) and type:
+   the `[nixos@nixos:~]$` prompt. Click inside the VM window to type into
+   it; press the **right Ctrl** key to get your mouse back.
+5. On a UK keyboard, first type `sudo loadkeys uk` (see
+   [Step 6](#step-6-install-onto-the-ssd), which also explains typing
+   commands). The VM's internet works by itself. Then type this, as one
+   line:
    ```bash
-   sudo nix --extra-experimental-features 'nix-command flakes' run --accept-flake-config \
-     github:SethBennett2523/ads-nix#ads-install -- vm-x86 /dev/sda
+   sudo nix --extra-experimental-features 'nix-command flakes' run --accept-flake-config github:SethBennett2523/ads-nix#ads-install -- vm-x86 /dev/sda
    ```
    Inside the VM, `/dev/sda` is the VM's own pretend drive, not your
-   computer's. Type `/dev/sda` to confirm, then wait for **Done**.
-6. Shut the VM down (application menu → Shut Down). In **Settings** →
-   **Storage**, click the NixOS `.iso` in the list → the small disc icon on
-   the right → **Remove Disk from Virtual Drive**.
+   computer's. Type `/dev/sda` to confirm, then wait for **Done**, and type
+   `poweroff`.
+6. In **Settings** → **Storage**, click the NixOS `.iso` in the list → the
+   small disc icon on the right → **Remove Disk from Virtual Drive**.
 7. **Start** the VM again and log in as **`uweai`** with password
    **`uwe-fsai`**. Continue with [First steps](first-steps.md).
 

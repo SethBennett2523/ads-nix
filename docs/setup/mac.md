@@ -151,7 +151,8 @@ Storage).
    - Apple Silicon Mac: **64-bit ARM**
    - Intel Mac: **64-bit Intel/AMD**
 
-   It's a single file ending in `.iso`, in your Downloads folder.
+   It's a single file ending in `.iso`, in your Downloads folder. Not the
+   *Graphical* one: these guides are written for the minimal one.
 
 ### Step 2: Create the VM
 
@@ -172,14 +173,22 @@ Open UTM and:
 
 ### Step 3: Install NixOS into the VM
 
-1. Select the VM and click the big **▶ play** button. After a minute you'll
-   see text and then a prompt. It's already logged in, and its internet
-   works automatically.
-2. Type this command carefully (you can't paste into the VM yet). On an
-   **Intel Mac**, use `vm-x86` instead of `vm-aarch64`:
+1. Select the VM and click the big **▶ play** button. Press **Enter** on the
+   first option in the NixOS menu. Text scrolls past for a minute, then
+   stops at a line ending `[nixos@nixos:~]$`. That's the *prompt*, waiting
+   for a command. The installer is text only, with no desktop or mouse. It's
+   already logged in, and its internet works automatically.
+2. Type this command carefully, as one long line: you can't paste into the
+   VM yet. Keep typing when you reach the edge of the screen, and press
+   Enter only at the end. On an **Intel Mac**, use `vm-x86` instead of
+   `vm-aarch64`:
    ```bash
    sudo nix --extra-experimental-features 'nix-command flakes' run --accept-flake-config github:SethBennett2523/ads-nix#ads-install -- vm-aarch64 /dev/vda
    ```
+   The installer uses a US keyboard layout, so on a UK Mac keyboard `#` is
+   **Shift + 3**. The
+   [PC guide](pc.md#step-6-install-onto-the-ssd) explains each piece of the
+   command, under *Typing it in pieces*.
    `/dev/vda` is the VM's own pretend drive. Your Mac's drive can't be seen
    from inside the VM at all.
 3. It shows the drive it's about to use (64 GB) and asks you to type its
