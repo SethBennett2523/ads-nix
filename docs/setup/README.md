@@ -40,15 +40,3 @@ ROS. New to Linux? Both guides assume that, and explain each step.
 Every graphical build has the KDE Plasma desktop and the user `uweai`, with
 password `uwe-fsai`. That password is printed here, in public, so change it
 the first time you log in.
-
-## While the repository is private
-
-The commands below fetch `github:SethBennett2523/ads-nix`, which only works
-once the repository is public. Until then:
-
-- On your own machine, add an SSH key to your GitHub account and use
-  `git+ssh://git@github.com/SethBennett2523/ads-nix` wherever these guides
-  say `github:SethBennett2523/ads-nix`.
-- Installing from a USB stick or into a fresh VM won't have your key, so
-  those routes need the repository to be public, or a drive made for you by
-  a project lead.

@@ -1,8 +1,11 @@
 # Installs a build type onto a drive:  ads-install dev-x86 /dev/sdb
 #
-# Runs from any NixOS live ISO (`nix run github:SethBennett2523/ads-nix#ads-install`)
-# or from the ads installer stick. It partitions with disko, then runs
-# nixos-install, which downloads the system straight onto the target drive.
+# Runs from any NixOS live ISO (`nix run github:SethBennett2523/ads-nix#ads-install`),
+# from the ads installer stick, or from a lead's own NixOS machine with the
+# drive plugged in by USB. It partitions with disko, then runs nixos-install,
+# which downloads the system straight onto the target drive. The drive is
+# mounted at a private directory under /run, never /mnt, so nothing the
+# machine running it has mounted is touched.
 # (disko-install would download it into the live system's memory first,
 # which a full desktop and ROS do not fit in on most laptops.)
 #
@@ -84,31 +87,41 @@ writeShellApplication {
     read -r -p "To continue, type the drive name ($disk): " ok
     [ "$ok" = "$disk" ] || stop "you typed '$ok', not '$disk'."
 
+    mnt=$(mktemp -d /run/ads-install.XXXXXX)
+    cleanup() {
+      if findmnt -R "$mnt" >/dev/null 2>&1; then umount -R "$mnt" || true; fi
+      rmdir "$mnt" 2>/dev/null || true
+    }
+    trap cleanup EXIT
+
     echo
     echo "Partitioning $disk..."
     disko --mode destroy,format,mount --yes-wipe-all-disks \
+      --root-mountpoint "$mnt" \
       --argstr device "$disk" ${flake}/lib/disko-btrfs.nix
 
     # The machine gets its own small flake in /etc/nixos: the build type
     # plus local.nix, which is where its user makes changes.
     echo
     echo "Writing /etc/nixos..."
-    mkdir -p /mnt/etc/nixos
-    sed "s/@HOST@/$host/g" ${flake}/templates/installed/flake.nix > /mnt/etc/nixos/flake.nix
-    cp ${flake}/templates/installed/local.nix /mnt/etc/nixos/local.nix
-    chmod 644 /mnt/etc/nixos/flake.nix /mnt/etc/nixos/local.nix
-    nix --extra-experimental-features 'nix-command flakes' flake lock path:/mnt/etc/nixos
+    mkdir -p "$mnt/etc/nixos"
+    sed "s/@HOST@/$host/g" ${flake}/templates/installed/flake.nix > "$mnt/etc/nixos/flake.nix"
+    cp ${flake}/templates/installed/local.nix "$mnt/etc/nixos/local.nix"
+    chmod 644 "$mnt/etc/nixos/flake.nix" "$mnt/etc/nixos/local.nix"
+    nix --extra-experimental-features 'nix-command flakes' flake lock "path:$mnt/etc/nixos"
+    echo "This machine will update from: $(grep -o 'url = "[^"]*"' "$mnt/etc/nixos/flake.nix")"
 
     echo
     echo "Installing $host. This downloads several GB; it can take a while."
-    nixos-install --root /mnt --no-root-password --no-channel-copy \
-      --flake "path:/mnt/etc/nixos#$host" \
+    nixos-install --root "$mnt" --no-root-password --no-channel-copy \
+      --flake "path:$mnt/etc/nixos#$host" \
       --option extra-substituters https://ros.cachix.org \
       --option extra-trusted-public-keys ros.cachix.org-1:dSyZxI8geDCJrwgvCOHDoAfOm5sV1wCPjBkKL+38Rvo=
 
-    umount -R /mnt
+    cleanup
+    trap - EXIT
     echo
-    echo "Done. Shut down, remove the installer, and start up from $disk."
+    echo "Done. Shut down (or unplug $disk), then start a computer from it."
     echo "Log in as uweai with password uwe-fsai, then change it with passwd."
   '';
   meta.description = "Install a UWE-FSAI build type onto a drive";
